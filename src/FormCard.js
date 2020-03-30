@@ -32,6 +32,8 @@ const FormCard = ({
   values,
   answerTemplate,
   setValues,
+  simple,
+  double,
   id,
   title,
   pastValue,
@@ -39,20 +41,33 @@ const FormCard = ({
   setAnswer
 }) => {
   const classes = useStyles();
+  let setTheAnswer;
 
-  const setTheAnswer = () => {
-    const firstParsed = parseFloat(values[fields[0].type]);
-    const secondParsed = parseFloat(values[fields[1].type]);
-    if (pastValue) {
-      const answer = firstParsed * secondParsed * pastValue;
-      console.log(answer);
+  if (simple) {
+    setTheAnswer = () => {
+      console.log("setting the answer: simple");
+      const parsedInput = parseFloat(values[fields[0].type]);
+      const answer = parsedInput * pastValue;
       setAnswer(answer);
-    } else {
-      const answer = firstParsed * secondParsed;
+    };
+  } else if (double) {
+    setTheAnswer = () => {
+      console.log("setting the answer: double");
+      const firstParsed = parseFloat(values[fields[0].type]);
+      const secondParsed = parseFloat(values[fields[1].type]);
+      console.log(firstParsed, secondParsed);
+      if (pastValue) {
+        const answer = firstParsed * secondParsed * pastValue;
+        setAnswer(answer);
+        console.log(answer);
+      } else {
+        const answer = firstParsed * secondParsed;
 
-      setAnswer(answer);
-    }
-  };
+        setAnswer(answer);
+        console.log(answer);
+      }
+    };
+  }
 
   const handleChange = (e, type) => {
     const data = {
@@ -89,7 +104,8 @@ const FormCard = ({
           <Divider />
           <div>
             <p className={classes.answer}>
-              {answerTemplate} <b>{answer}</b>
+              {answerTemplate} {"  "}
+              <b>{answer}</b>
             </p>
           </div>
         </Box>
