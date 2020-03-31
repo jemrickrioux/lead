@@ -1,29 +1,56 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import {
+  makeStyles,
+  createMuiTheme,
+  ThemeProvider
+} from "@material-ui/core/styles";
 import {
   Divider,
   Card,
   FormControl,
   CardContent,
+  CardHeader,
+  Typography,
   TextField,
   Button,
+  Fab,
   Box
 } from "@material-ui/core";
+
+import { Add as AddIcon } from "@material-ui/icons";
 import Dinero from "dinero.js";
 
 const useStyles = makeStyles(theme => ({
-  root: {
+  card: {
     margin: "25px",
-    maxWidth: "600px",
-    maxHeight: "360px",
+    maxHeight: "340px",
     "& > *": {
-      margin: theme.spacing(1),
-      width: "25ch"
+      margin: theme.spacing(1)
     }
   },
-  answer: {
-    marginLeft: "10px",
+  form: {
+    "& > *": {
+      margin: theme.spacing(1)
+    }
+  },
+  button: {
+    background: "#e70095",
+    color: "white",
+    fontFamily: "Quicksand",
+    fontWeight: "Bold",
+    fontSize: "18px"
+  },
+  answerText: {
+    marginright: theme.spacing(1),
     fontSize: "28px"
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1)
+  },
+  buttons: {
+    marginTop: theme.spacing(1),
+    fontFamily: "Quicksand",
+    fontWeight: "bold"
   }
 }));
 
@@ -32,39 +59,34 @@ const FormCard = ({
   values,
   answerTemplate,
   setValues,
-  simple,
-  double,
-  id,
   title,
   pastValue,
   answer,
   setAnswer
 }) => {
   const classes = useStyles();
+  const [isSet, setIsSet] = useState(false);
   let setTheAnswer;
 
-  if (simple) {
+  if (fields.length === 1) {
     setTheAnswer = () => {
-      console.log("setting the answer: simple");
       const parsedInput = parseFloat(values[fields[0].type]);
       const answer = parsedInput * pastValue;
       setAnswer(answer);
+      setIsSet(true);
     };
-  } else if (double) {
+  } else if (fields.length === 2) {
     setTheAnswer = () => {
-      console.log("setting the answer: double");
       const firstParsed = parseFloat(values[fields[0].type]);
       const secondParsed = parseFloat(values[fields[1].type]);
-      console.log(firstParsed, secondParsed);
       if (pastValue) {
         const answer = firstParsed * secondParsed * pastValue;
         setAnswer(answer);
-        console.log(answer);
+        setIsSet(true);
       } else {
         const answer = firstParsed * secondParsed;
-
         setAnswer(answer);
-        console.log(answer);
+        setIsSet(true);
       }
     };
   }
@@ -77,63 +99,61 @@ const FormCard = ({
     setValues(data);
   };
 
-  return (
-    <Card className={classes.root}>
+  return isSet ? (
+    <Card className={classes.card}>
+      <CardHeader title={title} />
       <CardContent>
-        <Box display={"flex"}>
-          <div>
-            <h2>{title}</h2>
-            <form className={classes.root} noValidate autoComplete="off">
-              {fields.map(field => {
-                return (
-                  <FormControl variant="outlined">
-                    <TextField
-                      id={field.type}
-                      label={field.label}
-                      variant="outlined"
-                      type="number"
-                      value={values[field.type]}
-                      onChange={e => handleChange(e, field.type)}
-                    />
-                  </FormControl>
-                );
-              })}
-              <Button onClick={setTheAnswer}>Submit</Button>
-            </form>
-          </div>
-          <Divider />
-          <div>
-            <p className={classes.answer}>
-              {answerTemplate} {"  "}
-              <b>{answer}</b>
-            </p>
-          </div>
-        </Box>
+        <p className={classes.answerText}>
+          {answerTemplate}{" "}
+          <b>{Dinero({ amount: parseInt(answer * 100) }).toFormat("$0.00")}</b>
+        </p>
+        <Fab
+          variant="extended"
+          size="medium"
+          color="primary"
+          onClick={() => setIsSet(false)}
+          aria-label="add"
+          className={classes.buttons}
+        >
+          <AddIcon />
+          Re-Calculer
+        </Fab>
+      </CardContent>
+    </Card>
+  ) : (
+    <Card className={classes.card}>
+      <CardHeader title={title} />
+      <CardContent>
+        <form className={classes.form} noValidate autoComplete="off">
+          {fields.map(field => {
+            return (
+              <FormControl variant="outlined">
+                <TextField
+                  id={field.type}
+                  label={field.label}
+                  variant="outlined"
+                  type="number"
+                  value={values[field.type]}
+                  onChange={e => handleChange(e, field.type)}
+                />
+              </FormControl>
+            );
+          })}
+        </form>
+        <Fab
+          size="medium"
+          color="primary"
+          variant="extended"
+          onClick={setTheAnswer}
+          aria-label="add"
+          className={classes.buttons}
+        >
+          <AddIcon className={classes.extendedIcon} />
+          Calculer
+        </Fab>
       </CardContent>
     </Card>
   );
 };
 
 export default FormCard;
-const ça = `
-
-<FormControl variant="outlined">
-            <TextField
-              id="contrat"
-              label="Achat Moyen"
-              variant="outlined"
-              type="number"
-              value={values.contrat}
-              onChange={e => handleChange(e, "contrat")}
-            />
-          </FormControl>
-          <FormControl variant="outlined">
-            <TextField
-              id="frequence"
-              label="Fréquence achat"
-              variant="outlined"
-              value={values.frequence}
-              onChange={e => handleChange(e, "frequence")}
-            />
-          </FormControl>
-`;
