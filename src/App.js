@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import FormCard from "./FormCard";
+import VerticalLinearStepper from "./Stepper";
 import {
   makeStyles,
   createMuiTheme,
@@ -118,6 +119,11 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <Container>
+        <VerticalLinearStepper
+          setValue={setValue}
+          setAnswer={setAnswer}
+          configs={configs}
+        />
         {configs.forms.map((form, key) => {
           return (
             <FormCard
