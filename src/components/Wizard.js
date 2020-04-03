@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
@@ -25,33 +26,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function getSteps() {
-  return ["Calculer vos fondamentales", "Create an ad group", "Create an ad"];
-}
-
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return `For each ad campaign that you create, you can control how much
-              you're willing to spend on clicks and conversions, which networks
-              and geographical locations you want your ads to show on, and more.`;
-    case 1:
-      return "An ad group contains one or more ads which target a shared set of keywords.";
-    case 2:
-      return `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`;
-    default:
-      return "Unknown step";
-  }
-}
-
-export default function VerticalLinearStepper({
-  configs,
-  setValue,
-  setAnswer
-}) {
+export default function Wizard({ configs, setValue, setAnswer }) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -70,24 +45,18 @@ export default function VerticalLinearStepper({
   return (
     <div className={classes.root}>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {configs.forms.map((form, key) => (
-          <Step key={form.title}>
+        {configs.steps.map((form, key) => (
+          <Step key={form.id}>
             <StepLabel>{form.title}</StepLabel>
             <StepContent>
               <FormCardLite
-                title={form.title}
-                pastValue={
-                  key > 0 ? configs.results[configs.forms[key - 1].id] : false
-                }
+                key={form.id + "-careder"}
                 id={form.id}
                 fields={form.fields}
                 values={configs[form.id].values}
-                answer={configs.results[form.id]}
                 setAnswer={setAnswer(form.id)}
-                answerTemplate={form.answerTemplate}
                 setValues={setValue(form.id)}
-                double={form.double}
-                simple={form.simple}
+                results={configs.results}
               />
               <div className={classes.actionsContainer}>
                 <div>
@@ -104,7 +73,7 @@ export default function VerticalLinearStepper({
                     onClick={handleNext}
                     className={classes.button}
                   >
-                    {activeStep === configs.forms.length - 1
+                    {activeStep === configs.steps.length - 1
                       ? "Finish"
                       : "Next"}
                   </Button>
@@ -114,9 +83,13 @@ export default function VerticalLinearStepper({
           </Step>
         ))}
       </Stepper>
-      {activeStep === configs.forms.length && (
+      {activeStep === configs.steps.length && (
         <Paper square elevation={0} className={classes.resetContainer}>
-          <Typography>All steps completed - you&apos;re finished</Typography>
+          <Typography>
+            All steps completed - you&apos;re finished
+            {JSON.stringify(configs.results)}
+          </Typography>
+          <Redirect to="/calculateur/resultat" />
           <Button onClick={handleReset} className={classes.button}>
             Reset
           </Button>

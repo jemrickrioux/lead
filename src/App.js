@@ -1,12 +1,17 @@
 import React, { useState } from "react";
-import FormCard from "./FormCard";
-import VerticalLinearStepper from "./Stepper";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {
   makeStyles,
   createMuiTheme,
   ThemeProvider
 } from "@material-ui/core/styles";
-import { Container } from "@material-ui/core";
+import { Container, Button } from "@material-ui/core";
+import Home from "./components/Home";
+import SaleTool from "./components/SaleTool";
+import Wizard from "./components/Wizard";
+import Results from "./components/Results";
+
+import getConfigurations from "./config";
 
 const theme = createMuiTheme({
   palette: {
@@ -14,95 +19,21 @@ const theme = createMuiTheme({
   }
 });
 
-const configurations = {
-  fundamentals: [
-    {
-      title: "Lifetime Customer Value",
-      id: "ltv",
-      fields: [
-        { label: "Fréquence achat", type: "frequence" },
-        { label: "Achat moyen", type: "contrat" }
-      ],
-      values: {
-        ltv: 0,
-        contrat: 0,
-        frequence: 0
-      },
-      answerTemplate: "Vos clients valent: "
-    },
-    {
-      title: "Coût aquisition client",
-      id: "cac",
-      fields: [{ label: "% marketing", type: "marketing" }],
-      values: {
-        ltv: 0,
-        cac: 0,
-        marketing: 0
-      },
-      answerTemplate: "Pour un client vous pouvez payer: "
-    },
-    {
-      title: "Coût par demande d'estimation",
-      id: "pac",
-      fields: [{ label: "% Rdv en client", type: "closing" }],
-      values: {
-        closing: 0,
-        cac: 0,
-        pac: 0
-      },
-      answerTemplate: "Pour un rendez-vous vous pouvez payer: "
-    },
-    {
-      type: "multiply",
-      title: "Coût par lead",
-      id: "cpa",
-      fields: [{ label: "% Lead en rdv", type: "closing" }],
-      values: {
-        closing: 0,
-        cac: 0,
-        cpa: 0
-      },
-      answerTemplate: "Pour un lead vous pouvez payer: "
-    },
-    {
-      type: "multiply",
-      title: "Coût par page vue",
-      id: "lpv",
-      fields: [{ label: "% conversion landing", type: "conversion" }],
-      values: {
-        conversion: 0,
-        cpa: 0,
-        lpv: 0
-      },
-      answerTemplate: "Pour une page vue vous pouvez payer: "
-    }
-  ]
-};
-
 const App = () => {
-  const baseState = configurations => {
-    let baseState = {};
-    let results = {};
-    configurations.fundamentals.forEach(form => {
-      results[form.id] = "";
-      baseState[form.id] = {
-        values: form.values
-      };
-    });
-    baseState = { ...baseState, results, forms: configurations.fundamentals };
-    return baseState;
-  };
-  const [configs, setConfigs] = useState(baseState(configurations));
+  const configurations = getConfigurations();
+  const [configs, setConfigs] = useState(configurations);
 
-  const setValue = type => values => {
-    const newValues = {
+  const setValue = type => newValue => {
+    console.log("newvalues", newValue);
+    console.log("configs", configs);
+    const newConfigs = {
       ...configs,
-      [type]: {
-        ...configs[type],
-        values
+      results: {
+        ...configs.results,
+        [type]: newValue
       }
     };
-    setConfigs(newValues);
+    setConfigs(newConfigs);
   };
 
   const setAnswer = type => answer => {
@@ -117,34 +48,39 @@ const App = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container>
-        <VerticalLinearStepper
-          setValue={setValue}
-          setAnswer={setAnswer}
-          configs={configs}
-        />
-        {configs.forms.map((form, key) => {
-          return (
-            <FormCard
-              title={form.title}
-              pastValue={
-                key > 0 ? configs.results[configs.forms[key - 1].id] : false
-              }
-              id={form.id}
-              fields={form.fields}
-              values={configs[form.id].values}
-              answer={configs.results[form.id]}
-              setAnswer={setAnswer(form.id)}
-              answerTemplate={form.answerTemplate}
-              setValues={setValue(form.id)}
-              double={form.double}
-              simple={form.simple}
-            />
-          );
-        })}
-      </Container>
-    </ThemeProvider>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route
+            path="/calculateur"
+            exact
+            render={() => (
+              <Wizard
+                setValue={setValue}
+                setAnswer={setAnswer}
+                configs={configs}
+              />
+            )}
+          />
+          <Route
+            path="/ventes"
+            exact
+            render={() => (
+              <SaleTool
+                setValue={setValue}
+                configs={configs}
+                setAnswer={setAnswer}
+              />
+            )}
+          />
+          <Route
+            path="/calculateur/resultat"
+            render={() => <Results text={configs.text} />}
+          />
+        </Switch>
+      </ThemeProvider>
+    </Router>
   );
 };
 

@@ -1,21 +1,6 @@
 import React, { useState } from "react";
-import {
-  makeStyles,
-  createMuiTheme,
-  ThemeProvider
-} from "@material-ui/core/styles";
-import {
-  Divider,
-  Card,
-  FormControl,
-  CardContent,
-  CardHeader,
-  Typography,
-  TextField,
-  Button,
-  Fab,
-  Box
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Card, FormControl, CardContent, TextField } from "@material-ui/core";
 
 import { Add as AddIcon } from "@material-ui/icons";
 import Dinero from "dinero.js";
@@ -54,23 +39,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FormCardLite = ({
-  fields,
-  values,
-  answerTemplate,
-  setValues,
-  title,
-  pastValue,
-  answer,
-  setAnswer
-}) => {
+const FormCardLite = ({ fields, values, setValues, results }) => {
   const classes = useStyles();
 
   const handleChange = (e, type) => {
-    const data = {
-      ...values,
-      [type]: e.currentTarget.value
-    };
+    const data = e.currentTarget.value;
     setValues(data);
   };
 
@@ -80,13 +53,13 @@ const FormCardLite = ({
         <form className={classes.form} noValidate autoComplete="off">
           {fields.map(field => {
             return (
-              <FormControl variant="outlined">
+              <FormControl key={field.type} variant="outlined">
                 <TextField
-                  id={field.type}
+                  key={field.type}
                   label={field.label}
                   variant="outlined"
                   type="number"
-                  value={values[field.type]}
+                  value={results[field.type]}
                   onChange={e => handleChange(e, field.type)}
                 />
               </FormControl>
