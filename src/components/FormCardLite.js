@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Card, FormControl, CardContent, TextField } from "@material-ui/core";
 
 import { Add as AddIcon } from "@material-ui/icons";
-import Dinero from "dinero.js";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -15,7 +14,8 @@ const useStyles = makeStyles(theme => ({
   },
   form: {
     "& > *": {
-      margin: theme.spacing(1)
+      margin: theme.spacing(1),
+      width: "25ch"
     }
   },
   button: {

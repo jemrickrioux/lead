@@ -10,20 +10,20 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import FormCardLite from "./FormCardLite";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%"
+    width: "100%",
   },
   button: {
     marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   actionsContainer: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   resetContainer: {
-    padding: theme.spacing(3)
-  }
+    padding: theme.spacing(3),
+  },
 }));
 
 export default function Wizard({ configs, setValue, setAnswer }) {
@@ -31,11 +31,11 @@ export default function Wizard({ configs, setValue, setAnswer }) {
   const [activeStep, setActiveStep] = React.useState(0);
 
   const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const handleReset = () => {
@@ -84,16 +84,7 @@ export default function Wizard({ configs, setValue, setAnswer }) {
         ))}
       </Stepper>
       {activeStep === configs.steps.length && (
-        <Paper square elevation={0} className={classes.resetContainer}>
-          <Typography>
-            All steps completed - you&apos;re finished
-            {JSON.stringify(configs.results)}
-          </Typography>
-          <Redirect to="/calculateur/resultat" />
-          <Button onClick={handleReset} className={classes.button}>
-            Reset
-          </Button>
-        </Paper>
+        <Redirect push to="/calculateur/confirmation" />
       )}
     </div>
   );

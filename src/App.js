@@ -3,46 +3,55 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {
   makeStyles,
   createMuiTheme,
-  ThemeProvider
+  ThemeProvider,
 } from "@material-ui/core/styles";
-import { Container, Button } from "@material-ui/core";
 import Home from "./components/Home";
 import SaleTool from "./components/SaleTool";
 import Wizard from "./components/Wizard";
 import Results from "./components/Results";
+import Optin from "./components/Optin";
 
 import getConfigurations from "./config";
 
 const theme = createMuiTheme({
   palette: {
-    primary: { main: "#e70095" }
-  }
+    primary: { main: "#e70095" },
+  },
+  typography: {
+    fontFamily: ["Quicksand"],
+    h1: {
+      fontSize: "36px",
+    },
+    h2: {
+      fontSize: "24px",
+      color: "grey",
+    },
+  },
 });
 
 const App = () => {
   const configurations = getConfigurations();
   const [configs, setConfigs] = useState(configurations);
 
-  const setValue = type => newValue => {
-    console.log("newvalues", newValue);
-    console.log("configs", configs);
+  const setValue = (type) => (newValue) => {
     const newConfigs = {
       ...configs,
       results: {
         ...configs.results,
-        [type]: newValue
-      }
+        [type]: newValue,
+      },
     };
+    console.log("new configs : ", newConfigs);
     setConfigs(newConfigs);
   };
 
-  const setAnswer = type => answer => {
+  const setAnswer = (type) => (answer) => {
     const newAnswer = {
       ...configs,
       results: {
         ...configs.results,
-        [type]: answer
-      }
+        [type]: answer,
+      },
     };
     setConfigs(newAnswer);
   };
@@ -51,7 +60,7 @@ const App = () => {
     <Router>
       <ThemeProvider theme={theme}>
         <Switch>
-          <Route path="/" exact component={Home} />
+          <Route path="/" exact render={() => <Home text={configs.text} />} />
           <Route
             path="/calculateur"
             exact
@@ -60,6 +69,27 @@ const App = () => {
                 setValue={setValue}
                 setAnswer={setAnswer}
                 configs={configs}
+              />
+            )}
+          />
+          <Route
+            path="/calculateur/confirmation"
+            render={() => (
+              <Optin
+                configs={configs}
+                setValue={setValue}
+                setAnswer={setAnswer}
+              />
+            )}
+          />
+          <Route
+            path="/calculateur/resultat"
+            render={() => (
+              <Results
+                text={configs.text}
+                stats={configs.results}
+                setValue={setValue}
+                setAnswer={setAnswer}
               />
             )}
           />
@@ -73,10 +103,6 @@ const App = () => {
                 setAnswer={setAnswer}
               />
             )}
-          />
-          <Route
-            path="/calculateur/resultat"
-            render={() => <Results text={configs.text} />}
           />
         </Switch>
       </ThemeProvider>

@@ -3,9 +3,7 @@ const stepsLtv = {
     {
       title: "Nombre de Clients (en 12 mois)",
       id: "clients",
-      fields: [
-        { label: "Nombre de clients (12 mois)", type: "clients", value: 0 }
-      ],
+      fields: [{ label: "Clients", type: "clients", value: 0 }],
       values: { clients: 0 },
       answerTemplate: "Vos clients valent: "
     },
@@ -17,9 +15,9 @@ const stepsLtv = {
       answerTemplate: "Vos clients valent: "
     },
     {
-      title: "Revenus (12 mois)",
+      title: "Revenus (en 12 mois)",
       id: "revenus",
-      fields: [{ label: "Revenus (12 mois)", type: "revenus", value: 0 }],
+      fields: [{ label: "Revenus", type: "revenus", value: 0 }],
       values: { revenus: 0 },
       answerTemplate: "Vos clients valent: "
     },
@@ -32,6 +30,17 @@ const stepsLtv = {
     }
   ],
   text: {
+    home: {
+      title: "Calculateur de valeur à vie client",
+      subheader: "Investissez suffisament et intelligemment.",
+      content: `Ce calculateur va vous demander certaines 
+        statistiques comme le nombre de clients,
+        le nombre de ventes, les revenus que vous avez 
+        fait dans les 12 derniers mois. 
+        De façon à calculer combien vous pouvez vous 
+        permettre pour aller chercher un client, on va vous demander le pourcentage de vos revenus que vous pouvez investir en marketing.
+        `
+    },
     results: {
       title: "Votre valeur à vie client",
       subheader: "Ce que vos client valent réelement",

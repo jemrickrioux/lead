@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   makeStyles,
   createMuiTheme,
-  ThemeProvider
+  ThemeProvider,
 } from "@material-ui/core/styles";
 import {
   Card,
@@ -12,23 +12,24 @@ import {
   CardHeader,
   Typography,
   Button,
-  Fab
+  Fab,
 } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   resultsContent: {
     marginLeft: theme.spacing(2),
     marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3)
-  }
+    marginBottom: theme.spacing(3),
+  },
 }));
-
-const classes = makeStyles({});
 
 export default function Results(props) {
   const classes = useStyles();
-  const { text } = props;
+
+  const { text, stats } = props;
+
   const { results } = text;
+
   return (
     <Container>
       <Card>
@@ -36,6 +37,14 @@ export default function Results(props) {
           <CardHeader title={results.title} subheader={results.subheader} />
           <Typography className={classes.resultsContent} variant={"body1"}>
             {results.content}
+          </Typography>
+          <Typography className={classes.resultsContent} variant={"body1"}>
+            Un client vaut {stats.ltv}
+          </Typography>
+          <Typography className={classes.resultsContent} variant={"body1"}>
+            Vous pouvez investir jusqu'à
+            {" " + stats.cac + " "}
+            par client!
           </Typography>
           <Link to={"/calculateur"}>
             <Button variant="outlined">Revenir</Button>
