@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
 import Dinero from "dinero.js";
 import axios from "axios";
 import {
@@ -15,8 +13,13 @@ import {
   FormGroup,
 } from "@material-ui/core";
 
+const baseUrl =
+  process.env.NODE_ENV == "development"
+    ? "http://localhost:5000/add"
+    : "https://lead-leo.herokuapp.com/add";
+
 const addContact = async (data) => {
-  const res = await axios.post("http://localhost:5000/add", data);
+  const res = await axios.post(baseUrl, data);
   return res;
 };
 const parsed = (input) => parseFloat(input);
@@ -49,15 +52,17 @@ export default function Optin(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { results } = props.configs;
-    const moyenne = formated(moyen(results.revenus, results.ventes));
-    const freq = frequence(results.ventes, results.clients).toString();
+    const moyenne = moyen(results.revenus, results.ventes);
+    const freq = frequence(results.ventes, results.clients);
+    const ltver = ltv(moyenne, freq);
 
     const valider = await addContact({
       ...formValue,
       ...results,
       moyen: moyenne,
       frequence: freq,
-      cpa: 
+      ltv: ltver,
+      cac: cac(ltver, results.marketing),
     });
     if (valider.status == "200") {
       setIsValid(true);
