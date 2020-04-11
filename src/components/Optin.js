@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
-import Dinero from "dinero.js";
 import axios from "axios";
 import {
   Container,
@@ -27,19 +26,28 @@ const ltv = (moyen, frequence) => moyen * frequence;
 const cac = (ltv, marketing) => ltv * parsed(marketing);
 const moyen = (revenus, ventes) => parsed(revenus) / parsed(ventes);
 const frequence = (ventes, clients) => parsed(ventes) / parsed(clients);
-const formated = (value) =>
-  Dinero({ amount: parseInt(value) * 100, currency: "CAD" })
-    .setLocale("fr-CA")
-    .toFormat("$0,0.00");
 
 export default function Optin(props) {
+  const { results } = props.configs;
   const [isValid, setIsValid] = useState(false);
   const [formValue, setFormValue] = useState({
     firstName: "",
     lastName: "",
+    company: "",
     phone: "",
     email: "",
   });
+  const computeStuff = async () => {
+    const moyenne = moyen(results.revenus, results.ventes);
+    const freq = frequence(results.ventes, results.clients);
+    const ltver = ltv(moyenne, freq);
+    const cacer = cac(ltver, results.marketing);
+    await props.setLtv(ltver);
+    await props.setCac(cacer);
+    await props.setFrequence(freq);
+    await props.setMoyenne(moyenne);
+    return { moyen: moyenne, frequence: freq, ltv: ltver, cac: cacer };
+  };
 
   const handleChange = (e) => {
     let newState = {
@@ -51,22 +59,21 @@ export default function Optin(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { results } = props.configs;
-    const moyenne = moyen(results.revenus, results.ventes);
-    const freq = frequence(results.ventes, results.clients);
-    const ltver = ltv(moyenne, freq);
-
+    const data = await computeStuff();
     const valider = await addContact({
       ...formValue,
       ...results,
-      moyen: moyenne,
-      frequence: freq,
-      ltv: ltver,
-      cac: cac(ltver, results.marketing),
+      ...data,
     });
     if (valider.status == "200") {
       setIsValid(true);
     }
+  };
+
+  const handleSkip = async (e) => {
+    e.preventDefault();
+    computeStuff();
+    setIsValid(true);
   };
 
   return isValid ? (
@@ -98,6 +105,13 @@ export default function Optin(props) {
                 variant="outlined"
               />
               <TextField
+                id="company"
+                value={formValue.company}
+                onChange={handleChange}
+                label="Entreprise"
+                variant="outlined"
+              />
+              <TextField
                 id="email"
                 value={formValue.email}
                 onChange={handleChange}
@@ -112,7 +126,12 @@ export default function Optin(props) {
                 variant="outlined"
               />
             </FormGroup>
-            <Button onClick={handleSubmit}>Je veux mes résultats!</Button>
+            <Button variant={"outlined"} onClick={handleSubmit}>
+              Je veux mes résultats!
+            </Button>
+            {/*    <Button variant={"outlined"} onClick={handleSkip}>
+              Skipper
+            </Button> */}
           </form>
         </CardContent>
       </Card>

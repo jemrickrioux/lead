@@ -6,7 +6,6 @@ import {
   ThemeProvider,
 } from "@material-ui/core/styles";
 import Home from "./components/Home";
-import SaleTool from "./components/SaleTool";
 import Wizard from "./components/Wizard";
 import Results from "./components/Results";
 import Optin from "./components/Optin";
@@ -32,7 +31,10 @@ const theme = createMuiTheme({
 const App = () => {
   const configurations = getConfigurations();
   const [configs, setConfigs] = useState(configurations);
-
+  const [ltv, setLtv] = useState(0);
+  const [cac, setCac] = useState(0);
+  const [moyen, setMoyen] = useState(0);
+  const [frequence, setFrequence] = useState(0);
   const setValue = (type) => (newValue) => {
     const newConfigs = {
       ...configs,
@@ -41,19 +43,7 @@ const App = () => {
         [type]: newValue,
       },
     };
-    console.log("new configs : ", newConfigs);
     setConfigs(newConfigs);
-  };
-
-  const setAnswer = (type) => (answer) => {
-    const newAnswer = {
-      ...configs,
-      results: {
-        ...configs.results,
-        [type]: answer,
-      },
-    };
-    setConfigs(newAnswer);
   };
 
   return (
@@ -64,21 +54,17 @@ const App = () => {
           <Route
             path="/calculateur"
             exact
-            render={() => (
-              <Wizard
-                setValue={setValue}
-                setAnswer={setAnswer}
-                configs={configs}
-              />
-            )}
+            render={() => <Wizard setValue={setValue} configs={configs} />}
           />
           <Route
             path="/calculateur/confirmation"
             render={() => (
               <Optin
                 configs={configs}
-                setValue={setValue}
-                setAnswer={setAnswer}
+                setLtv={setLtv}
+                setMoyenne={setMoyen}
+                setCac={setCac}
+                setFrequence={setFrequence}
               />
             )}
           />
@@ -88,22 +74,14 @@ const App = () => {
               <Results
                 text={configs.text}
                 stats={configs.results}
-                setValue={setValue}
-                setAnswer={setAnswer}
+                frequence={frequence}
+                moyen={moyen}
+                ltv={ltv}
+                cac={cac}
               />
             )}
           />
-          <Route
-            path="/ventes"
-            exact
-            render={() => (
-              <SaleTool
-                setValue={setValue}
-                configs={configs}
-                setAnswer={setAnswer}
-              />
-            )}
-          />
+          )} />
         </Switch>
       </ThemeProvider>
     </Router>

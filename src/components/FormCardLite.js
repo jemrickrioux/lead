@@ -4,45 +4,49 @@ import { Card, FormControl, CardContent, TextField } from "@material-ui/core";
 
 import { Add as AddIcon } from "@material-ui/icons";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     margin: "25px",
     maxHeight: "340px",
     "& > *": {
-      margin: theme.spacing(1)
-    }
+      margin: theme.spacing(1),
+    },
   },
   form: {
     "& > *": {
       margin: theme.spacing(1),
-      width: "25ch"
-    }
+      width: "25ch",
+    },
   },
   button: {
     background: "#e70095",
     color: "white",
     fontFamily: "Quicksand",
     fontWeight: "Bold",
-    fontSize: "18px"
+    fontSize: "18px",
   },
   answerText: {
     marginright: theme.spacing(1),
-    fontSize: "28px"
+    fontSize: "28px",
   },
   extendedIcon: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   buttons: {
     marginTop: theme.spacing(1),
     fontFamily: "Quicksand",
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
 }));
 
 const FormCardLite = ({ fields, values, setValues, results }) => {
   const classes = useStyles();
 
-  const handleChange = (e, type) => {
+  const handleChange = (e) => {
+    console.log(
+      "Handling form change.| Data passing through : ",
+      e.currentTarget.value
+    );
     const data = e.currentTarget.value;
     setValues(data);
   };
@@ -51,7 +55,7 @@ const FormCardLite = ({ fields, values, setValues, results }) => {
     <Card className={classes.card}>
       <CardContent>
         <form className={classes.form} noValidate autoComplete="off">
-          {fields.map(field => {
+          {fields.map((field) => {
             return (
               <FormControl key={field.type} variant="outlined">
                 <TextField
@@ -60,7 +64,7 @@ const FormCardLite = ({ fields, values, setValues, results }) => {
                   variant="outlined"
                   type="number"
                   value={results[field.type]}
-                  onChange={e => handleChange(e, field.type)}
+                  onChange={(e) => handleChange(e)}
                 />
               </FormControl>
             );

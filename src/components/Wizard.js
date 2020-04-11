@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Wizard({ configs, setValue, setAnswer }) {
+export default function Wizard({ configs, setValue }) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -36,10 +36,6 @@ export default function Wizard({ configs, setValue, setAnswer }) {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   return (
@@ -54,7 +50,6 @@ export default function Wizard({ configs, setValue, setAnswer }) {
                 id={form.id}
                 fields={form.fields}
                 values={configs[form.id].values}
-                setAnswer={setAnswer(form.id)}
                 setValues={setValue(form.id)}
                 results={configs.results}
               />
